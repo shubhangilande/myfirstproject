@@ -1,0 +1,2 @@
+# myfirstproject
+Simplified trading bot
