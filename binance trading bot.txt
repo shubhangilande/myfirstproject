@@ -1,0 +1,42 @@
+import cryptography
+print(cryptography.__version__)
+import logging
+from binance.client import Client
+from binance.enums import *
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+
+class BasicBot:
+    def __init__(self, api_key, api_secret, testnet=True):
+        self.client = Client(api_key, api_secret, testnet=testnet)
+        self.client.FUTURES_URL = 'https://testnet.binancefuture.com/fapi'
+
+    def place_order(self, symbol, side, order_type, quantity, price=None):
+        try:
+            params = {
+                'symbol': symbol,
+                'side': side,
+                'type': order_type,
+                'quantity': quantity
+            }
+            if order_type == ORDER_TYPE_LIMIT:
+                params['price'] = price
+                params['timeInForce'] = TIME_IN_FORCE_GTC
+
+            order = self.client.futures_create_order(**params)
+            logging.info(f"Order placed: {order}")
+            return order
+        except Exception as e:
+            logging.error(f"Error placing order: {e}")
+            return None
+
+if __name__ == "__main__":
+    # Replace these with your actual API credentials
+    API_KEY = d55a55c23f04673df43b0f30abcdf7e23ca3e9fcc788c0f3a96de99183e3e238
+    API_SECRET = ab3976f69fc31127c6d38b9029f4916f8935283407f3541d8d865b8a912af15d
+
+    bot = BasicBot(API_KEY, API_SECRET)
+
+    # Example usage
+    bot.place_order(symbol='BTCUSDT', side=SIDE_BUY, order_type=ORDER_TYPE_MARKET, quantity=0.001)
